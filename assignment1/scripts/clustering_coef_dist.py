@@ -5,22 +5,33 @@ import scipy
 
 import utils
 
+def get_degree(graph):
+    # get adj matrix from graph
+    adj = nx.to_numpy_matrix(graph)
+    # multiple adj thrice
+    a3 = np.linalg.matrix_power(adj, 3)
+    # get node degrees
+    return np.sum(adj, axis=0)
+
+def get_coefs(graph):
+    # get adj matrix from graph
+    adj = nx.to_numpy_matrix(graph)
+    # multiple adj thrice
+    a3 = np.linalg.matrix_power(adj, 3)
+    # get node degrees
+    d = get_degree(graph)
+    # compute clustering coef
+    return np.diag(a3) / (d * (d - 1))
+
 def main():
     graphs = utils.load_graphs()
 
     fig, axes = plt.subplots(nrows=1, ncols=len(graphs), figsize=(15,5))
     for ax, (graph_name, graph) in zip(axes, graphs.items()):
         
-        source_degrees = []
-        destination_degrees = []
-        for edge in graph.edges:
-            source_degrees += [graph.degree[edge[0]], graph.degree[edge[1]]]
-            destination_degrees += [graph.degree[edge[1]], graph.degree[edge[0]]]
+        
 
-        corr, p = scipy.stats.pearsonr(source_degrees, destination_degrees)
-        print(f"Pearson correlation of {graph_name} is: {corr}")
-
-        ax.scatter(source_degrees, destination_degrees, s=2, alpha=0.2)
+        ax.plot()
         ax.set_title(graph_name.title())
         ax.set_xlabel('Source Degree')
         ax.set_ylabel('Destination Degree')
