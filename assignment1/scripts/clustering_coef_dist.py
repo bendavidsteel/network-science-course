@@ -5,23 +5,24 @@ import scipy
 
 import utils
 
-def get_degree(graph):
+def get_degrees(graph):
     # get adj matrix from graph
-    adj = nx.to_numpy_matrix(graph)
-    # multiple adj thrice
-    a3 = np.linalg.matrix_power(adj, 3)
+    adj = nx.to_numpy_array(graph)
     # get node degrees
-    return np.sum(adj, axis=0)
+    return adj.sum(axis=0, keepdims=False)
 
 def get_coefs(graph):
     # get adj matrix from graph
-    adj = nx.to_numpy_matrix(graph)
+    adj = nx.to_numpy_array(graph)
     # multiple adj thrice
     a3 = np.linalg.matrix_power(adj, 3)
     # get node degrees
-    d = get_degree(graph)
+    d = get_degrees(graph)
     # compute clustering coef
-    return np.diag(a3) / (d * (d - 1))
+    diag_a3 = np.diag(a3)
+    denom = (d * (d - 1))
+    # do divide where x/0 is 0
+    return np.divide(diag_a3, denom, out=np.zeros_like(diag_a3), where=denom!=0)
 
 def main():
     graphs = utils.load_graphs()
@@ -37,7 +38,7 @@ def main():
         ax.set_ylabel('Destination Degree')
 
     fig.tight_layout()
-    utils.save_fig(fig, 'degree_correlations')
+    utils.save_fig(fig, 'clustering_coef_dist')
 
 if __name__ == '__main__':
     main()

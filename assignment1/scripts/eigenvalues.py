@@ -10,7 +10,7 @@ def main():
 
     fig, axes = plt.subplots(nrows=1, ncols=len(graphs), figsize=(15,5))
     for ax, (graph_name, graph) in zip(axes, graphs.items()):
-        adj = nx.to_numpy_matrix(graph)
+        adj = nx.to_numpy_array(graph)
         eigenvalues = scipy.sparse.linalg.eigs(adj, k=100, return_eigenvectors=False)
         spectral_gap = np.abs(eigenvalues)[-1] - np.abs(eigenvalues)[-2]
         print(f"Spectral gap of {graph_name} is: {spectral_gap}")
