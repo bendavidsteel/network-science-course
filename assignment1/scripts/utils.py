@@ -21,3 +21,7 @@ def load_graphs():
         graphs[name] = graph
 
     return graphs
+
+def save_fig(fig, fig_name):
+    figs_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'figs')
+    fig.savefig(os.path.join(figs_path, f"{fig_name}.png"))
