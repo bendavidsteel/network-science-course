@@ -5,7 +5,7 @@ import torch
 import torch.nn.functional as F
 from torch_geometric.nn import GCNConv
 
-from ogb.nodeproppred import PygNodePropPredDataset
+
 
 class GCN(torch.nn.Module):
     def __init__(self):
@@ -23,15 +23,7 @@ class GCN(torch.nn.Module):
 
         return F.log_softmax(x, dim=1)
 
-def get_datasets():
-    graphs = utils.load_node_label()
 
-    d_name = 'ogbn-arxiv'
-    dataset = PygNodePropPredDataset(name = d_name) 
-
-    split_idx = dataset.get_idx_split()
-    train_idx, valid_idx, test_idx = split_idx["train"], split_idx["valid"], split_idx["test"]
-    graph = dataset[0] # pyg graph object
 
 def train_and_test(dataset, device):
     model = GCN().to(device)
@@ -55,7 +47,7 @@ def train_and_test(dataset, device):
 def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    datasets = get_datasets()
+    datasets = utils.get_datasets()
     for dataset in datasets:
         train_and_test(dataset, device)
 
