@@ -24,24 +24,23 @@ class GCN(torch.nn.Module):
         return F.log_softmax(x, dim=1)
 
 
-
 def train_and_test(dataset, device):
-    model = GCN(dataset).to(device)
-    data = dataset[0].to(device)
+    model = GCN(dataset['data']).to(device)
+    data = dataset['data'][0].to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=5e-4)
 
     model.train()
     for epoch in range(200):
         optimizer.zero_grad()
         out = model(data)
-        loss = F.nll_loss(out[data.train_mask], data.y[data.train_mask])
+        loss = F.nll_loss(out[dataset['train_mask']], data.y[dataset['train_mask']])
         loss.backward()
         optimizer.step()
 
     model.eval()
     pred = model(data).argmax(dim=1)
-    correct = (pred[data.test_mask] == data.y[data.test_mask]).sum()
-    acc = int(correct) / int(data.test_mask.sum())
+    correct = (pred[dataset['test_mask']] == data.y[dataset['test_mask']]).sum()
+    acc = int(correct) / int(dataset['test_mask'].sum())
     print(f'Accuracy: {acc:.4f}')
 
 def main():
