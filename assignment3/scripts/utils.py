@@ -14,7 +14,7 @@ def get_datasets():
     datasets = [torch_geometric.datasets.Planetoid(data_path, dataset_name) for dataset_name in dataset_names]
 
     d_name = 'ogbn-arxiv'
-    dataset = PygNodePropPredDataset(name = d_name)
+    dataset = PygNodePropPredDataset(root=data_path, name=d_name)
     datasets.append(dataset)
 
     return datasets
