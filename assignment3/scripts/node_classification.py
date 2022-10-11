@@ -1,8 +1,11 @@
+from pkgutil import get_data
 import utils
 
 import torch
 import torch.nn.functional as F
 from torch_geometric.nn import GCNConv
+
+from ogb.nodeproppred import PygNodePropPredDataset
 
 class GCN(torch.nn.Module):
     def __init__(self):
@@ -20,10 +23,17 @@ class GCN(torch.nn.Module):
 
         return F.log_softmax(x, dim=1)
 
-def main():
+def get_datasets():
     graphs = utils.load_node_label()
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    d_name = 'ogbn-arxiv'
+    dataset = PygNodePropPredDataset(name = d_name) 
+
+    split_idx = dataset.get_idx_split()
+    train_idx, valid_idx, test_idx = split_idx["train"], split_idx["valid"], split_idx["test"]
+    graph = dataset[0] # pyg graph object
+
+def train_and_test(dataset, device):
     model = GCN().to(device)
     data = dataset[0].to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=5e-4)
@@ -41,6 +51,13 @@ def main():
     correct = (pred[data.test_mask] == data.y[data.test_mask]).sum()
     acc = int(correct) / int(data.test_mask.sum())
     print(f'Accuracy: {acc:.4f}')
+
+def main():
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    datasets = get_datasets()
+    for dataset in datasets:
+        train_and_test(dataset, device)
 
 if __name__ == '__main__':
     main()
